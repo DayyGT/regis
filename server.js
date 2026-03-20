@@ -3,10 +3,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// 🔥 FIREBASE
 const FIREBASE = "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/";
-
-// 🔐 SECRET (WAJIB SAMA LUA)
 const SECRET = "DAYY_PRIVATE_123";
 
 // =========================
@@ -17,14 +14,13 @@ app.get("/register", async (req, res) => {
         const { discord, password, key } = req.query;
 
         if (key !== SECRET) return res.send("forbidden");
-
         if (!discord || !password) return res.send("invalid");
 
         const url = FIREBASE + "users/" + discord + ".json";
 
         let user = await fetch(url).then(r => r.json());
 
-        // 🔥 FIX PALING AMAN
+        // 🔥 FIX AMAN
         if (user && typeof user === "object" && Object.keys(user).length > 0) {
             return res.send("exists");
         }
@@ -47,14 +43,6 @@ app.get("/register", async (req, res) => {
     }
 });
 
-        return res.send("success");
-
-    } catch (e) {
-        console.log(e);
-        return res.send("error");
-    }
-});
-
 // =========================
 // LOGIN
 // =========================
@@ -62,30 +50,16 @@ app.get("/login", async (req, res) => {
     try {
         const { discord, password, key } = req.query;
 
-        // 🔐 VALIDASI KEY
-        if (key !== SECRET) {
-            return res.send("forbidden");
-        }
-
-        if (!discord || !password) {
-            return res.send("invalid");
-        }
+        if (key !== SECRET) return res.send("forbidden");
+        if (!discord || !password) return res.send("invalid");
 
         const url = FIREBASE + "users/" + discord + ".json";
 
         let user = await fetch(url).then(r => r.json());
 
-        if (!user) {
-            return res.send("not found");
-        }
-
-        if (!user.active) {
-            return res.send("inactive");
-        }
-
-        if (user.password !== password) {
-            return res.send("wrong");
-        }
+        if (!user) return res.send("not found");
+        if (!user.active) return res.send("inactive");
+        if (user.password !== password) return res.send("wrong");
 
         console.log("LOGIN:", discord);
 
