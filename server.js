@@ -16,30 +16,16 @@ app.get("/register", async (req, res) => {
     try {
         const { discord, password, key } = req.query;
 
-        // 🔐 VALIDASI KEY
-        if (key !== SECRET) {
-            return res.send("forbidden");
-        }
+        if (key !== SECRET) return res.send("forbidden");
 
-        // VALIDASI INPUT
-        if (!discord || !password) {
-            return res.send("invalid");
-        }
-
-        // 🔥 ANTI INJECT
-        if (!discord.match(/^[a-zA-Z0-9_]+$/)) {
-            return res.send("invalid");
-        }
-
-        if (discord.length > 50) {
-            return res.send("invalid");
-        }
+        if (!discord || !password) return res.send("invalid");
 
         const url = FIREBASE + "users/" + discord + ".json";
 
         let user = await fetch(url).then(r => r.json());
 
-        if (user) {
+        // 🔥 FIX PALING AMAN
+        if (user && typeof user === "object" && Object.keys(user).length > 0) {
             return res.send("exists");
         }
 
@@ -57,6 +43,14 @@ app.get("/register", async (req, res) => {
 
     } catch (e) {
         console.log("ERROR REGISTER:", e);
+        return res.send("error");
+    }
+});
+
+        return res.send("success");
+
+    } catch (e) {
+        console.log(e);
         return res.send("error");
     }
 });
