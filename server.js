@@ -10,7 +10,6 @@ const SECRET = "DAYY_PRIVATE_123";
 // REGISTER
 // =========================
 app.get("/register", async (req, res) => {
-app.get("/register", async (req, res) => {
     try {
         const { discord, password, key } = req.query;
 
@@ -19,13 +18,17 @@ app.get("/register", async (req, res) => {
 
         const url = FIREBASE + "users/" + discord + ".json";
 
-        let user = await fetch(url).then(r => r.json());
+        // 🔍 CEK USER
+        let checkRes = await fetch(url);
+        let user = await checkRes.json();
+
+        console.log("CEK USER:", user);
 
         if (user !== null) {
             return res.send("exists");
         }
 
-        // 🔥 WRITE KE FIREBASE
+        // 🔥 WRITE FIREBASE
         let fb = await fetch(url, {
             method: "PUT",
             headers: {
@@ -37,11 +40,10 @@ app.get("/register", async (req, res) => {
             })
         });
 
-        let fbText = await fb.text()
+        let fbText = await fb.text();
+        console.log("FIREBASE RES:", fbText);
 
-        console.log("FIREBASE RES:", fbText)
-
-        // 🔥 CEK BERHASIL ATAU NGGAK
+        // ❗ DETEK ERROR
         if (fbText.includes("error")) {
             return res.send("firebase error");
         }
@@ -66,13 +68,16 @@ app.get("/login", async (req, res) => {
 
         const url = FIREBASE + "users/" + discord + ".json";
 
-        let user = await fetch(url).then(r => r.json());
+        let checkRes = await fetch(url);
+        let user = await checkRes.json();
+
+        console.log("LOGIN DATA:", user);
 
         if (!user) return res.send("not found");
         if (!user.active) return res.send("inactive");
         if (user.password !== password) return res.send("wrong");
 
-        console.log("LOGIN:", discord);
+        console.log("LOGIN SUCCESS:", discord);
 
         return res.send("success");
 
