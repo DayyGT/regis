@@ -6,21 +6,25 @@ app.use(express.json());
 
 const FIREBASE = "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
+// =========================
 // REGISTER
+// =========================
 app.post("/register", async (req, res) => {
     const { discord, password } = req.body;
 
     if (!discord || !password) {
-        return res.json({ status: false, msg: "DATA KOSONG" });
+        return res.send("invalid");
     }
 
-    let check = await fetch(FIREBASE + "users/" + discord + ".json").then(r => r.json());
+    const url = FIREBASE + "users/" + discord + ".json";
 
-    if (check) {
-        return res.json({ status: false, msg: "AKUN SUDAH ADA" });
+    let user = await fetch(url).then(r => r.json());
+
+    if (user) {
+        return res.send("exists");
     }
 
-    await fetch(FIREBASE + "users/" + discord + ".json", {
+    await fetch(url, {
         method: "PUT",
         body: JSON.stringify({
             password: password,
@@ -28,20 +32,43 @@ app.post("/register", async (req, res) => {
         })
     });
 
-    res.json({ status: true, msg: "REGISTER SUCCESS" });
+    return res.send("success");
 });
 
+// =========================
 // LOGIN
+// =========================
 app.post("/login", async (req, res) => {
     const { discord, password } = req.body;
 
-    let data = await fetch(FIREBASE + "users/" + discord + ".json").then(r => r.json());
+    if (!discord || !password) {
+        return res.send("invalid");
+    }
 
-    if (!data) return res.json({ status: false, msg: "AKUN TIDAK ADA" });
-    if (!data.active) return res.json({ status: false, msg: "NONAKTIF" });
-    if (data.password !== password) return res.json({ status: false, msg: "PASSWORD SALAH" });
+    const url = FIREBASE + "users/" + discord + ".json";
 
-    res.json({ status: true, msg: "LOGIN SUCCESS" });
+    let user = await fetch(url).then(r => r.json());
+
+    if (!user) {
+        return res.send("not found");
+    }
+
+    if (!user.active) {
+        return res.send("inactive");
+    }
+
+    if (user.password !== password) {
+        return res.send("wrong");
+    }
+
+    return res.send("success");
 });
 
-app.listen(3000, () => console.log("API RUNNING"));
+// =========================
+// ROOT TEST
+// =========================
+app.get("/", (req, res) => {
+    res.send("API RUNNING");
+});
+
+app.listen(3000, () => console.log("Server running"));
