@@ -1,83 +1,89 @@
 const express = require("express");
-const admin = require("firebase-admin");
+const fetch = require("node-fetch");
 
 const app = express();
 
-// 🔐 SECRET
-const SECRET = "DAYY_PRIVATE_123";
-
-// 🔥 FIREBASE ADMIN CONFIG
-const serviceAccount = require("./serviceAccountKey.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/"
-});
-
-const db = admin.database();
+const FIREBASE = "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
 // =========================
-// REGISTER
+// REGISTER (GET SUPPORT)
 // =========================
 app.get("/register", async (req, res) => {
-    try {
-        const { discord, password, key } = req.query;
+try {
+const { discord, password } = req.query;
 
-        if (key !== SECRET) return res.send("forbidden");
-        if (!discord || !password) return res.send("invalid");
+if (!discord || !password) {  
+        return res.send("invalid");  
+    }  
 
-        const ref = db.ref("users/" + discord);
+    const url = FIREBASE + "users/" + discord + ".json";  
 
-        const snapshot = await ref.get();
+    let user = await fetch(url).then(r => r.json());  
 
-        if (snapshot.exists()) {
-            return res.send("exists");
-        }
+    if (user) {  
+        return res.send("exists");  
+    }  
 
-        await ref.set({
-            password: password,
-            active: true
-        });
+    await fetch(url, {  
+        method: "PUT",  
+        body: JSON.stringify({  
+            password: password,  
+            active: true  
+        })  
+    });  
 
-        return res.send("success");
+    return res.send("success");  
 
-    } catch (e) {
-        console.log(e);
-        return res.send("error");
-    }
+} catch (e) {  
+    console.log(e);  
+    return res.send("error");  
+}
+
 });
 
 // =========================
-// LOGIN
+// LOGIN (GET SUPPORT)
 // =========================
 app.get("/login", async (req, res) => {
-    try {
-        const { discord, password, key } = req.query;
+try {
+const { discord, password } = req.query;
 
-        if (key !== SECRET) return res.send("forbidden");
-        if (!discord || !password) return res.send("invalid");
+if (!discord || !password) {  
+        return res.send("invalid");  
+    }  
 
-        const ref = db.ref("users/" + discord);
-        const snapshot = await ref.get();
+    const url = FIREBASE + "users/" + discord + ".json";  
 
-        if (!snapshot.exists()) return res.send("not found");
+    let user = await fetch(url).then(r => r.json());  
 
-        const user = snapshot.val();
+    if (!user) {  
+        return res.send("not found");  
+    }  
 
-        if (!user.active) return res.send("inactive");
-        if (user.password !== password) return res.send("wrong");
+    if (!user.active) {  
+        return res.send("inactive");  
+    }  
 
-        return res.send("success");
+    if (user.password !== password) {  
+        return res.send("wrong");  
+    }  
 
-    } catch (e) {
-        console.log(e);
-        return res.send("error");
-    }
+    return res.send("success");  
+
+} catch (e) {  
+    console.log(e);  
+    return res.send("error");  
+}
+
 });
 
+// =========================
 // ROOT
+// =========================
 app.get("/", (req, res) => {
-    res.send("API ADMIN MODE 🔥");
+res.send("API RUNNING");
 });
 
 app.listen(3000, () => console.log("Server running"));
+
+ini punya w yang lama
