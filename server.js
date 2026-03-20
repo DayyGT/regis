@@ -85,5 +85,3 @@ res.send("API RUNNING");
 });
 
 app.listen(3000, () => console.log("Server running"));
-
-ini punya w yang lama
