@@ -4,92 +4,84 @@ const fetch = require("node-fetch");
 const app = express();
 
 const FIREBASE = "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/";
-const SECRET = "DAYY_PRIVATE_123";
 
 // =========================
-// REGISTER
+// REGISTER (GET SUPPORT)
 // =========================
 app.get("/register", async (req, res) => {
-    try {
-        const { discord, password, key } = req.query;
+try {
+const { discord, password } = req.query;
 
-        if (key !== SECRET) return res.send("forbidden");
-        if (!discord || !password) return res.send("invalid");
+if (!discord || !password) {  
+        return res.send("invalid");  
+    }  
 
-        const url = FIREBASE + "users/" + discord + ".json";
+    const url = FIREBASE + "users/" + discord + ".json";  
 
-        let response = await fetch(url);
-        let user = await response.json();
+    let user = await fetch(url).then(r => r.json());  
 
-        console.log("USER RAW:", user);
+    if (user) {  
+        return res.send("exists");  
+    }  
 
-        // 🔥 FIX DISINI
-        if (user && Object.keys(user).length > 0) {
-            return res.send("exists");
-        }
+    await fetch(url, {  
+        method: "PUT",  
+        body: JSON.stringify({  
+            password: password,  
+            active: true  
+        })  
+    });  
 
-        let fb = await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                password: password,
-                active: true
-            })
-        });
+    return res.send("success");  
 
-        let fbText = await fb.text();
-        console.log("FIREBASE WRITE:", fbText);
+} catch (e) {  
+    console.log(e);  
+    return res.send("error");  
+}
 
-        if (fbText.includes("error")) {
-            return res.send("firebase error");
-        }
-
-        return res.send("success");
-
-    } catch (e) {
-        console.log("ERROR REGISTER:", e);
-        return res.send("error");
-    }
 });
 
 // =========================
-// LOGIN
+// LOGIN (GET SUPPORT)
 // =========================
 app.get("/login", async (req, res) => {
-    try {
-        const { discord, password, key } = req.query;
+try {
+const { discord, password } = req.query;
 
-        if (key !== SECRET) return res.send("forbidden");
-        if (!discord || !password) return res.send("invalid");
+if (!discord || !password) {  
+        return res.send("invalid");  
+    }  
 
-        const url = FIREBASE + "users/" + discord + ".json";
+    const url = FIREBASE + "users/" + discord + ".json";  
 
-        let checkRes = await fetch(url);
-        let user = await checkRes.json();
+    let user = await fetch(url).then(r => r.json());  
 
-        console.log("LOGIN DATA:", user);
+    if (!user) {  
+        return res.send("not found");  
+    }  
 
-        if (!user) return res.send("not found");
-        if (!user.active) return res.send("inactive");
-        if (user.password !== password) return res.send("wrong");
+    if (!user.active) {  
+        return res.send("inactive");  
+    }  
 
-        console.log("LOGIN SUCCESS:", discord);
+    if (user.password !== password) {  
+        return res.send("wrong");  
+    }  
 
-        return res.send("success");
+    return res.send("success");  
 
-    } catch (e) {
-        console.log("ERROR LOGIN:", e);
-        return res.send("error");
-    }
+} catch (e) {  
+    console.log(e);  
+    return res.send("error");  
+}
+
 });
 
 // =========================
 // ROOT
 // =========================
 app.get("/", (req, res) => {
-    res.send("API RUNNING SECURE");
+res.send("API RUNNING");
 });
 
 app.listen(3000, () => console.log("Server running"));
