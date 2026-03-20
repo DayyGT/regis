@@ -3,16 +3,35 @@ const fetch = require("node-fetch");
 
 const app = express();
 
+// 🔥 FIREBASE
 const FIREBASE = "https://webs-50d23-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
+// 🔐 SECRET (WAJIB SAMA LUA)
+const SECRET = "DAYY_PRIVATE_123";
+
 // =========================
-// REGISTER (GET SUPPORT)
+// REGISTER
 // =========================
 app.get("/register", async (req, res) => {
     try {
-        const { discord, password } = req.query;
+        const { discord, password, key } = req.query;
 
+        // 🔐 VALIDASI KEY
+        if (key !== SECRET) {
+            return res.send("forbidden");
+        }
+
+        // VALIDASI INPUT
         if (!discord || !password) {
+            return res.send("invalid");
+        }
+
+        // 🔥 ANTI INJECT
+        if (!discord.match(/^[a-zA-Z0-9_]+$/)) {
+            return res.send("invalid");
+        }
+
+        if (discord.length > 50) {
             return res.send("invalid");
         }
 
@@ -32,20 +51,27 @@ app.get("/register", async (req, res) => {
             })
         });
 
+        console.log("REGISTER:", discord);
+
         return res.send("success");
 
     } catch (e) {
-        console.log(e);
+        console.log("ERROR REGISTER:", e);
         return res.send("error");
     }
 });
 
 // =========================
-// LOGIN (GET SUPPORT)
+// LOGIN
 // =========================
 app.get("/login", async (req, res) => {
     try {
-        const { discord, password } = req.query;
+        const { discord, password, key } = req.query;
+
+        // 🔐 VALIDASI KEY
+        if (key !== SECRET) {
+            return res.send("forbidden");
+        }
 
         if (!discord || !password) {
             return res.send("invalid");
@@ -67,10 +93,12 @@ app.get("/login", async (req, res) => {
             return res.send("wrong");
         }
 
+        console.log("LOGIN:", discord);
+
         return res.send("success");
 
     } catch (e) {
-        console.log(e);
+        console.log("ERROR LOGIN:", e);
         return res.send("error");
     }
 });
@@ -79,7 +107,7 @@ app.get("/login", async (req, res) => {
 // ROOT
 // =========================
 app.get("/", (req, res) => {
-    res.send("API RUNNING");
+    res.send("API RUNNING SECURE");
 });
 
 app.listen(3000, () => console.log("Server running"));
