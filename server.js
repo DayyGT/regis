@@ -10,6 +10,7 @@ const SECRET = "DAYY_PRIVATE_123";
 // REGISTER
 // =========================
 app.get("/register", async (req, res) => {
+app.get("/register", async (req, res) => {
     try {
         const { discord, password, key } = req.query;
 
@@ -20,20 +21,30 @@ app.get("/register", async (req, res) => {
 
         let user = await fetch(url).then(r => r.json());
 
-        // 🔥 FIX AMAN
-        if (user && typeof user === "object" && Object.keys(user).length > 0) {
+        if (user !== null) {
             return res.send("exists");
         }
 
-        await fetch(url, {
+        // 🔥 WRITE KE FIREBASE
+        let fb = await fetch(url, {
             method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
                 password: password,
                 active: true
             })
         });
 
-        console.log("REGISTER:", discord);
+        let fbText = await fb.text()
+
+        console.log("FIREBASE RES:", fbText)
+
+        // 🔥 CEK BERHASIL ATAU NGGAK
+        if (fbText.includes("error")) {
+            return res.send("firebase error");
+        }
 
         return res.send("success");
 
