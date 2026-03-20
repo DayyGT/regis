@@ -18,17 +18,16 @@ app.get("/register", async (req, res) => {
 
         const url = FIREBASE + "users/" + discord + ".json";
 
-        // 🔍 CEK USER
-        let checkRes = await fetch(url);
-        let user = await checkRes.json();
+        let response = await fetch(url);
+        let user = await response.json();
 
-        console.log("CEK USER:", user);
+        console.log("USER RAW:", user);
 
-        if (user !== null) {
+        // 🔥 FIX DISINI
+        if (user && Object.keys(user).length > 0) {
             return res.send("exists");
         }
 
-        // 🔥 WRITE FIREBASE
         let fb = await fetch(url, {
             method: "PUT",
             headers: {
@@ -41,9 +40,8 @@ app.get("/register", async (req, res) => {
         });
 
         let fbText = await fb.text();
-        console.log("FIREBASE RES:", fbText);
+        console.log("FIREBASE WRITE:", fbText);
 
-        // ❗ DETEK ERROR
         if (fbText.includes("error")) {
             return res.send("firebase error");
         }
