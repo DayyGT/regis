@@ -23,7 +23,7 @@ if (!discord || !password) {
 
     if (user) {  
         return res.send("exists");  
-    }  
+    } 
 
     await fetch(url, {  
         method: "PUT",  
@@ -41,7 +41,7 @@ if (!discord || !password) {
     body: JSON.stringify({
         embeds: [
             {
-                title: "Register Member",
+                title: "Register Member PTHT",
                 description: "New account has been created.",
 
                 color: 0x313338,
@@ -49,15 +49,9 @@ if (!discord || !password) {
                 fields: [
                     {
                         name: "User",
-                        value: `<@${discord}>`
-                    },
-                    {
-                        name: "━━━━━━━━━━━━━━━━━━━━━━",
-                        value: " ",
-                    },
-                    {
+                        value: `<@${discord}>`,
                         name: "Status",
-                        value: "REGISTER SUCCESS"
+                        value: "Register Success"
                     }
                 ],
 
