@@ -48,10 +48,10 @@ if (!discord || !password) {
                 fields: [
                     {
                        name: "Status",
-                       value: "Register Success"
+                       value: "Success"
                     },
                    {
-                        name: "Register",
+                        name: "",
                         value: `<@${discord}>`
                    }
                 ],
