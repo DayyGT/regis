@@ -43,15 +43,12 @@ if (!discord || !password) {
             {
                 title: "Register Member PTHT",
                 description: "New account has been created.",
-
                 color: 0x313338,
 
                 fields: [
                     {
-                        name: "User",
-                        value: `<@${discord}>`,
-                        name: "Status",
-                        value: "Register Success"
+                        name: "Register",
+                        value: `User: <@${discord}>\nStatus: Register Success`
                     }
                 ],
 
