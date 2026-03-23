@@ -46,7 +46,8 @@ if (!discord || !password) {
                 color: 0x313338,
 
                 fields: [
-                    {
+                    { 
+                        name: "Information",
                         value: `User: <@${discord}>\nStatus: Register Success`
                     }
                 ],
