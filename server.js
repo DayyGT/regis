@@ -33,7 +33,7 @@ if (!discord || !password) {
         })  
     });  
 
-await fetch(WEBHOOK, {
+   await fetch(WEBHOOK, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
@@ -41,25 +41,28 @@ await fetch(WEBHOOK, {
     body: JSON.stringify({
         embeds: [
             {
-                title: "✨ NEW REGISTER",
-                description: "Member baru berhasil daftar!",
-                color: 0x8A2BE2, // ungu aesthetic
+                title: "Register Member",
+                description: "New account has been created.",
+
+                color: 0x313338,
 
                 fields: [
                     {
-                        name: "👤 User",
-                        value: `<@${discord}>`,
-                        inline: false
+                        name: "User",
+                        value: `<@${discord}>`
                     },
                     {
-                        name: "📌 Status",
-                        value: "```REGISTER SUCCESS```",
-                        inline: false
+                        name: "━━━━━━━━━━━━━━━━━━━━━━",
+                        value: " ",
+                    },
+                    {
+                        name: "Status",
+                        value: "REGISTER SUCCESS"
                     }
                 ],
 
                 footer: {
-                    text: "GrowLauncher Auth System"
+                    text: "Authentication System"
                 },
 
                 timestamp: new Date()
