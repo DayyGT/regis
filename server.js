@@ -1,3 +1,4 @@
+const WEBHOOK = "https://discord.com/api/webhooks/1483243474664030389/rLOb9SDsSqaH9kGD1mheRK7TjyeJ-SxyzmYjdQX7l7HTdBlk4Ko_Ytwj2r5m03xddgvF";
 const express = require("express");
 const fetch = require("node-fetch");
 
@@ -32,6 +33,44 @@ if (!discord || !password) {
         })  
     });  
 
+await fetch(WEBHOOK, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        embeds: [
+            {
+                title: "✨ NEW REGISTER",
+                description: "Member baru berhasil daftar!",
+                color: 0x8A2BE2, // ungu aesthetic
+
+                fields: [
+                    {
+                        name: "👤 User",
+                        value: `<@${discord}>`,
+                        inline: false
+                    },
+                    {
+                        name: "📌 Status",
+                        value: "```REGISTER SUCCESS```",
+                        inline: false
+                    }
+                ],
+
+                footer: {
+                    text: "GrowLauncher Auth System"
+                },
+
+                timestamp: new Date()
+            }
+        ],
+        allowed_mentions: {
+            parse: ["users"]
+        }
+    })
+});
+        
     return res.send("success");  
 
 } catch (e) {  
