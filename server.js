@@ -47,9 +47,13 @@ if (!discord || !password) {
 
                 fields: [
                     {
+                       name: "Status",
+                       value: "Register Success"
+                    },
+                   {
                         name: "Register",
-                        value: `User: <@${discord}>\nStatus: Register Success`
-                    }
+                        value: `<@${discord}>`
+                   }
                 ],
 
                 footer: {
